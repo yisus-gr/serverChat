@@ -21,7 +21,7 @@ public class ChatClient {
             String alias = scanner.nextLine();
 
             // Enviar el mensaje de unión al servidor
-            String joinMessage = "j^" + alias + "@" + socket.getLocalAddress().getHostAddress() + "^";
+            String joinMessage = "j" + alias  ;
             salidaCliente.writeUTF(joinMessage);
 
             // Hilo para recibir mensajes del servidor
@@ -43,7 +43,7 @@ public class ChatClient {
 
             // Captura de entrada del usuario y envío al servidor
             while (true) {
-                System.out.print("Escribe un mensaje (o 'salir' para desconectarte): ");
+                //System.out.print("Escribe un mensaje (o 'salir' para desconectarte): ");
                 String mensajeUsuario = scanner.nextLine();
                 if (mensajeUsuario.equalsIgnoreCase("salir")) {
                     socket.close();

@@ -17,8 +17,10 @@ public class Server {
         }
         return null;
     }
-
- 
+    
+    public Vector<Socket> getClients() {
+        return clients;
+    }
 
     public Server(){
         ServerSocket welcomeSocket = inicializaServer();
@@ -38,6 +40,7 @@ public class Server {
 
                     if(socket.isClosed()){
                         clients.remove(socket);
+                        
                         break;
                     }
                 } catch (IOException ioe){

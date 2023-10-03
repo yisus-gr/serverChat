@@ -10,6 +10,7 @@ public class HiloChat implements Runnable{
 	private Socket socket;
 	private DataInputStream netIn;
 	private DataOutputStream netOut;
+	private String[] listaAlias;
 
 
 	public HiloChat(Socket socket, Vector<Socket> clients ){
@@ -18,7 +19,8 @@ public class HiloChat implements Runnable{
 	}
 
 	public void inicializa(){
-
+		enviaMensaje(clients.toString());
+		System.out.println(clients.toString());
 		try{			
 			netIn = new DataInputStream(socket.getInputStream());
 		}catch (IOException ioe){
@@ -27,10 +29,10 @@ public class HiloChat implements Runnable{
 	}
 
 	public void enviaMensaje(String msg){	
-		System.out.println(msg);	
+		//sSystem.out.println(msg);	
 		try{
 			for (Socket socketTmp : clients){
-                System.out.println(socketTmp);
+                
 				netOut = new DataOutputStream(socketTmp.getOutputStream());
 				netOut.writeUTF(msg);
 			}
@@ -42,12 +44,16 @@ public class HiloChat implements Runnable{
 	public void eliminarSocketDelVector() {
         if (socket != null && clients != null) {
             clients.remove(socket);
-        }
+			System.out.println(clients.toString());
+			enviaMensaje(clients.toString());
+		}
+
     }
 
 	public void run(){
 		inicializa();
 		try {
+			
 			while(true){
 				String msg = netIn.readUTF();
 				if (msg.equals("DESCONECTAR")) {
@@ -59,6 +65,7 @@ public class HiloChat implements Runnable{
 
 
 				StringTokenizer st = new StringTokenizer(msg, "^");
+				System.out.println(st.nextToken());
 				if (st.countTokens() >=  4){
 					String command = st.nextToken();
 					if (command.equalsIgnoreCase("m")){
@@ -71,6 +78,7 @@ public class HiloChat implements Runnable{
 						res += alias.substring(0,alias.indexOf("@")); 
 						if (command.equalsIgnoreCase("j")){
 							res += "^_^joined from " + alias.substring(alias.indexOf("@") + 1) + "^";
+							System.out.println(res);
 							enviaMensaje(res);
 						} else {
 							res += "^-^parted from " + alias.substring(alias.indexOf("@") + 1) + "^";
