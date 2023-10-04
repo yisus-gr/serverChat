@@ -71,6 +71,16 @@ public class HiloChat implements Runnable{
 		}
 	}
 
+	public void enviaMensaje(String msg, Socket dest){
+		try {
+			netOut = new DataOutputStream(dest.getOutputStream());
+			netOut.writeUTF(msg);
+		} catch (IOException ioe) {
+			System.err.println("Problemas en el envio de mensaje privado");
+		}
+
+	}
+
 	public void eliminarSocketDelVector(String alias) {
         if (socket != null && clients != null) {
             
@@ -101,26 +111,15 @@ public class HiloChat implements Runnable{
 				//System.out.println(st.nextToken());
 				if (st.countTokens() >=  4){
 					String command = st.nextToken();
+					
 					if (command.equalsIgnoreCase("m")){
 						enviaMensaje(msg);
-					} else {
-						String res = "m^Server@";
-						InetAddress dir = InetAddress.getLocalHost();
-						res += dir.getHostAddress();
-						String alias2 = st.nextToken();
-						res += alias2.substring(0,alias2.indexOf("@")); 
-						if (command.equalsIgnoreCase("j")){
-							res += "^_^joined from " + alias2.substring(alias.indexOf("@") + 1) + "^";
-							System.out.println(res);
-							enviaMensaje(res);
-						} else {
-							res += "^-^parted from " + alias2.substring(alias.indexOf("@") + 1) + "^";
-							enviaMensaje(res);
-							
-							clients.remove(socket);
-							
-							return;
-						}
+					} else if (command.equalsIgnoreCase("p")){
+						String aliasR = st.nextToken();
+						String aliasD = st.nextToken();
+						Socket destinatarioSocket = aliasToSocketMap.get(aliasD);
+						enviaMensaje(msg, destinatarioSocket);
+						
 					}
 				} 
 			}
