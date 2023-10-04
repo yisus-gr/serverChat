@@ -36,8 +36,11 @@ public class HiloChat implements Runnable{
 			listaAlias.setLength(listaAlias.length() - 2);
 	
 			// Envia la lista de alias al cliente
-			netOut = new DataOutputStream(socket.getOutputStream());
-			netOut.writeUTF(listaAlias.toString());
+			for (Socket socketTmp : clients) {
+                DataOutputStream tmpNetOut = new DataOutputStream(socketTmp.getOutputStream());
+                tmpNetOut.writeUTF(listaAlias.toString());
+            }
+
 			System.out.println(listaAlias);
 		} catch (IOException ioe) {
 			System.err.println("Problemas en el envío de la lista de usuarios");
