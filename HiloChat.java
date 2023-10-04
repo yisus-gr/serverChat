@@ -13,7 +13,7 @@ public class HiloChat implements Runnable{
 	private DataOutputStream netOut;
 	private String alias;
 	private HashMap<String, Socket> aliasToSocketMap = new HashMap<>();
-	private StringBuilder listaAlias = new StringBuilder("Usuarios conectados: ");
+	
 
 
 	public HiloChat(Socket socket, Vector<Socket> clients, String alias, HashMap<String, Socket> aliasToSocketMap){
@@ -26,7 +26,7 @@ public class HiloChat implements Runnable{
 
 	public void enviaListaDeUsuarios() {
 		try {
-			
+			StringBuilder listaAlias = new StringBuilder("Usuarios conectados: ");
 			
 			for (String alias : aliasToSocketMap.keySet()) {
 				listaAlias.append(alias).append(", ");
@@ -38,6 +38,7 @@ public class HiloChat implements Runnable{
 			// Envia la lista de alias al cliente
 			netOut = new DataOutputStream(socket.getOutputStream());
 			netOut.writeUTF(listaAlias.toString());
+			System.out.println(listaAlias);
 		} catch (IOException ioe) {
 			System.err.println("Problemas en el envío de la lista de usuarios");
 		}
@@ -47,7 +48,7 @@ public class HiloChat implements Runnable{
 	public void inicializa(){
 		
 		enviaListaDeUsuarios();
-		System.out.println(listaAlias);
+		//System.out.println(listaAlias);
 		try{			
 			netIn = new DataInputStream(socket.getInputStream());
 		}catch (IOException ioe){
@@ -70,9 +71,11 @@ public class HiloChat implements Runnable{
 
 	public void eliminarSocketDelVector(String alias) {
         if (socket != null && clients != null) {
-            clients.remove(socket);
+            
 			aliasToSocketMap.remove(alias);
-			System.out.println(listaAlias);
+			
+			//System.out.println(listaAlias);
+			clients.remove(socket);
 			enviaListaDeUsuarios();
 		}
 
