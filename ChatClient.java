@@ -21,8 +21,8 @@ public class ChatClient {
             String alias = scanner.nextLine();
 
             // Enviar el mensaje de unión al servidor
-            String joinMessage = "j" + alias  ;
-            salidaCliente.writeUTF(joinMessage);
+            String joinMessage = "j^" + alias + "@" +  socket.getLocalAddress().getHostAddress() +"^";
+            salidaCliente.writeUTF(alias);
 
             // Hilo para recibir mensajes del servidor
             Thread recibirMensajes = new Thread(() -> {
