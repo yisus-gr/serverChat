@@ -26,26 +26,25 @@ public class HiloChat implements Runnable{
 
 	public void enviaListaDeUsuarios() {
 		try {
-			StringBuilder listaAlias = new StringBuilder("Usuarios conectados: ");
-			
+			StringBuilder listaAlias = new StringBuilder();
+	
 			for (String alias : aliasToSocketMap.keySet()) {
-				listaAlias.append(alias).append(", ");
+				listaAlias.append(alias).append(",");
 			}
 	
-			// Elimina la última coma y espacio
-			listaAlias.setLength(listaAlias.length() - 2);
-	
-			// Envia la lista de alias al cliente
+			// envia la lista  a todos los clientes 
 			for (Socket socketTmp : clients) {
                 DataOutputStream tmpNetOut = new DataOutputStream(socketTmp.getOutputStream());
                 tmpNetOut.writeUTF(listaAlias.toString());
             }
-
-			System.out.println(listaAlias);
+	
+			// Envia la lista de alias al cliente
+			
 		} catch (IOException ioe) {
 			System.err.println("Problemas en el envío de la lista de usuarios");
 		}
 	}
+	
 	
 
 	public void inicializa(){
