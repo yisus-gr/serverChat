@@ -94,6 +94,7 @@ public class HiloChat implements Runnable{
     }
 
 	public void enviaArchivo(String path, Socket dest, String aliasRemitente, String aliasDestino) throws IOException {
+		
 		try {
 			File file = new File(path);
 			if (file.exists()) {
@@ -136,6 +137,42 @@ public class HiloChat implements Runnable{
 		}
 	}
 
+	public void enviarArch(String aliasDestino, String aliasRemitente, String nombreArchivo, long tamano, Socket dest ){
+		try {
+			// Abre un DataOutputStream para enviar la señal de inicio de transferencia de archivo
+			DataOutputStream enviaraCliente = new DataOutputStream(dest.getOutputStream());
+			System.out.println("Iniciando envio al servidor...");
+			enviaraCliente.writeUTF("TRANSFERENCIA_DE_ARCHIVO");
+			enviaraCliente.flush();
+			enviaraCliente.writeUTF(aliasRemitente);
+			enviaraCliente.writeUTF(nombreArchivo);
+			enviaraCliente.writeLong(tamano);
+			enviaraCliente.flush();
+
+			// Abre un DataInputStream para recibir el archivo del emisor
+			DataInputStream archivoIn = new DataInputStream(socket.getInputStream());
+			
+			// Crea un FileOutputStream para escribir el archivo en el destinatario
+			//FileOutputStream archivoOut = new FileOutputStream(nombreArchivo);
+
+			byte[] buffer = new byte[4096];
+			int bytesRead;
+			long bytesRecibidos = 0;
+
+			// Lee y guarda el contenido del archivo
+			while (bytesRecibidos < tamano && (bytesRead = archivoIn.read(buffer)) > 0) {
+			 //   archivoOut.write(buffer, 0, bytesRead);
+				enviaraCliente.write(buffer,0,bytesRead);
+				bytesRecibidos += bytesRead;
+			}
+			System.out.println("Envio al cliente...");
+
+		   // archivoOut.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void run(){
 		inicializa();
 		try {
@@ -164,10 +201,14 @@ public class HiloChat implements Runnable{
 						enviaMensaje(msg, destinatarioSocket);
 						
 					} else if (command.equalsIgnoreCase("f")){
-						String aliasR = st.nextToken();
-						String aliasD = st.nextToken();
-						Socket destinatarioSocket = aliasToSocketMap.get(aliasD);
-						enviaArchivo(msg, destinatarioSocket, aliasR, aliasD);
+						String aliasDestinatario = netIn.readUTF();
+						String aliasRemitente = netIn.readUTF();
+						String nombreArchivo = netIn.readUTF();
+						long tamanoArchivo = netIn.readLong();
+						Socket destinatarioSocket = aliasToSocketMap.get(aliasDestinatario);
+						System.out.println("Archivo recivido en el servidor");
+						enviarArch(aliasDestinatario, aliasRemitente, nombreArchivo, tamanoArchivo ,destinatarioSocket);
+
 					}
 				} 
 			}
