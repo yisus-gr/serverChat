@@ -142,7 +142,7 @@ public class HiloChat implements Runnable{
 			// Abre un DataOutputStream para enviar la señal de inicio de transferencia de archivo
 			DataOutputStream enviaraCliente = new DataOutputStream(dest.getOutputStream());
 			System.out.println("Iniciando envio al servidor...");
-			enviaraCliente.writeUTF("TRANSFERENCIA_DE_ARCHIVO");
+			enviaraCliente.writeUTF("f^");
 			enviaraCliente.flush();
 			enviaraCliente.writeUTF(aliasRemitente);
 			enviaraCliente.writeUTF(nombreArchivo);
@@ -189,8 +189,9 @@ public class HiloChat implements Runnable{
 
 				StringTokenizer st = new StringTokenizer(msg, "^");
 				//System.out.println(st.nextToken());
+				String command = st.nextToken();
 				if (st.countTokens() >=  4){
-					String command = st.nextToken();
+					
 					
 					if (command.equalsIgnoreCase("m")){
 						enviaMensaje(msg);
@@ -200,7 +201,8 @@ public class HiloChat implements Runnable{
 						Socket destinatarioSocket = aliasToSocketMap.get(aliasD);
 						enviaMensaje(msg, destinatarioSocket);
 						
-					} else if (command.equalsIgnoreCase("f")){
+					} 
+				} else if (command.equalsIgnoreCase("f")){
 						String aliasDestinatario = netIn.readUTF();
 						String aliasRemitente = netIn.readUTF();
 						String nombreArchivo = netIn.readUTF();
@@ -210,7 +212,6 @@ public class HiloChat implements Runnable{
 						enviarArch(aliasDestinatario, aliasRemitente, nombreArchivo, tamanoArchivo ,destinatarioSocket);
 
 					}
-				} 
 			}
 				
 
