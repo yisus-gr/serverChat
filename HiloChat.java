@@ -99,7 +99,7 @@ public class HiloChat implements Runnable{
 			// Abre un DataOutputStream para enviar la señal de inicio de transferencia de archivo
 			DataOutputStream enviaraCliente = new DataOutputStream(dest.getOutputStream());
 			System.out.println("Iniciando envio al servidor...");
-			enviaraCliente.writeUTF("f^");
+			enviaraCliente.writeUTF("f^"); //señal de transferencia
 			enviaraCliente.flush();
 			enviaraCliente.writeUTF(aliasRemitente);
 			enviaraCliente.writeUTF(nombreArchivo);
@@ -136,7 +136,6 @@ public class HiloChat implements Runnable{
 			
 			while(true){
 				String msg = netIn.readUTF();
-				System.out.println(msg);
 				if (msg.equals("DESCONECTAR")) {
 					// Cerrar la conexión y eliminar el cliente de la lista
 					eliminarSocketDelVector(alias);
