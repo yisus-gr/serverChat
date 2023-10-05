@@ -93,49 +93,6 @@ public class HiloChat implements Runnable{
 
     }
 
-	public void enviaArchivo(String path, Socket dest, String aliasRemitente, String aliasDestino) throws IOException {
-		
-		try {
-			File file = new File(path);
-			if (file.exists()) {
-				String res = "200 OK:" + file.length() + ":" + file.getName();
-				int totalLen = (int) file.length();
-				System.out.println(res + "Lin 49");
-				enviaMensaje(res, dest);
-				
-				BufferedInputStream bis;
-				BufferedOutputStream bos;
-				bis = new BufferedInputStream(new FileInputStream(path));
-				bos = new BufferedOutputStream(dest.getOutputStream());
-				byte[] buffer = new byte[1024];
-				int bytesRead = 0;
-				int length = 1024;
-				int rest = 0;
-				while (true) {
-					rest = totalLen - bytesRead;
-					System.out.println(rest + " - " + totalLen + " - " + bytesRead + " lin 61 ");
-					if (rest > length) {
-						int read = bis.read(buffer, 0, length);
-						bos.write(buffer, 0, read);
-					} else {
-						int read = bis.read(buffer, 0, rest);
-						bos.write(buffer, 0, read);
-						bos.flush();
-						System.out.println("Se envio");
-						bis.close();
-						return;
-					}
-					bytesRead += 1024;
-				}
-			} else {
-				String res = "404 Not Found";
-				System.out.println("400:NOT Found:");
-				enviaMensaje(res, dest);
-			}
-		} catch (IOException ioe) {
-			System.out.println(ioe.getMessage());
-		}
-	}
 
 	public void enviarArch(String aliasDestino, String aliasRemitente, String nombreArchivo, long tamano, Socket dest ){
 		try {
@@ -179,6 +136,7 @@ public class HiloChat implements Runnable{
 			
 			while(true){
 				String msg = netIn.readUTF();
+				System.out.println(msg);
 				if (msg.equals("DESCONECTAR")) {
 					// Cerrar la conexión y eliminar el cliente de la lista
 					eliminarSocketDelVector(alias);
@@ -189,11 +147,11 @@ public class HiloChat implements Runnable{
 
 				StringTokenizer st = new StringTokenizer(msg, "^");
 				//System.out.println(st.nextToken());
-				String command = st.nextToken();
+				
 				if (st.countTokens() >=  4){
-					
-					
+					String command = st.nextToken();
 					if (command.equalsIgnoreCase("m")){
+						
 						enviaMensaje(msg);
 					} else if (command.equalsIgnoreCase("p")){
 						String aliasR = st.nextToken();
@@ -201,8 +159,9 @@ public class HiloChat implements Runnable{
 						Socket destinatarioSocket = aliasToSocketMap.get(aliasD);
 						enviaMensaje(msg, destinatarioSocket);
 						
+						
 					} 
-				} else if (command.equalsIgnoreCase("f")){
+				} else if (st.nextToken().equalsIgnoreCase("f")){
 						String aliasDestinatario = netIn.readUTF();
 						String aliasRemitente = netIn.readUTF();
 						String nombreArchivo = netIn.readUTF();
